@@ -1,6 +1,8 @@
 package lexer
 
 import (
+	"strings"
+
 	"github.com/josiahvehrs/go-interpreter/token"
 )
 
@@ -65,6 +67,9 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.LBRACE, l.ch)
 	case '}':
 		tok = newToken(token.RBRACE, l.ch)
+	case '"':
+		tok.Type = token.STRING
+		tok.Literal	 = l.readString()
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
@@ -84,6 +89,25 @@ func (l *Lexer) NextToken() token.Token {
 
 	l.readChar()
 	return tok
+}
+
+func (l *Lexer) readString() string {
+	position := l.position + 1
+	var prev byte
+	for {
+		l.readChar()
+		if l.ch == '"' && prev != '\\' || l.ch == 0 {
+			break
+		}
+		prev = l.ch
+	}
+	input := l.input[position:l.position]
+	input = strings.ReplaceAll(input, `\"`, `"`)
+	input = strings.ReplaceAll(input, `\\`, `\`)
+	input = strings.ReplaceAll(input, `\t`, "\t")
+	input = strings.ReplaceAll(input, `\n`, "\n")
+	input = strings.ReplaceAll(input, `\r"`, "\r")
+	return input
 }
 
 func (l *Lexer) readChar() {

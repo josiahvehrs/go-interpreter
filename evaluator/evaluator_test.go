@@ -155,6 +155,36 @@ func TestFunctionApplication(t *testing.T) {
 	}
 }
 
+func TestStringLiteral(t *testing.T) {
+	input := `"Hello world!"`
+
+	evaluated := testEval(input)
+	str, ok := evaluated.(*object.String)
+	if !ok {
+		t.Fatalf("object is not String. got=%T (%+v)", evaluated, evaluated)
+	}
+
+	expectedBody := "Hello world!"
+	if str.Value != expectedBody {
+		t.Fatalf("String has wrong value. got=%q", str.Value)
+	}
+}
+
+func TestStringConcatenation(t *testing.T) {
+	input := `"Hello" + " " + "world!"`
+
+	evaluated := testEval(input)
+	str, ok := evaluated.(*object.String)
+	if !ok {
+		t.Fatalf("object is not String. got=%T (%+v)", evaluated, evaluated)
+	}
+
+	expectedBody := "Hello world!"
+	if str.Value != expectedBody {
+		t.Fatalf("String has wrong value. got=%q", str.Value)
+	}
+}
+
 func TestFunctionObject(t *testing.T) {
 	input := "fn(x) { x + 2; };"
 
@@ -210,6 +240,7 @@ func TestErrorHandling(t *testing.T) {
 			return 1;
 			}`, "unknown operator: BOOLEAN + BOOLEAN"},
 			{"foobar", "identifier not found: foobar"},
+			{`"Hello" - "World`, "unknown operator: STRING - STRING"},
 
 	}
 
