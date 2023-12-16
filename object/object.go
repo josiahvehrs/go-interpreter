@@ -11,13 +11,14 @@ import (
 type ObjectType string
 
 const (
-	INTEGER_OBJ = "INTEGER"
-	STRING_OBJ = "STRING"
-	BOOLEAN_OBJ = "BOOLEAN"
-	NULL_OBJ    = "NULL"
+	INTEGER_OBJ      = "INTEGER"
+	STRING_OBJ       = "STRING"
+	BOOLEAN_OBJ      = "BOOLEAN"
+	NULL_OBJ         = "NULL"
 	RETURN_VALUE_OBJ = "RETURN_VALUE"
-	ERROR_OBJ = "ERROR"
-	FUNCTION_OBJ = "FUNCTION"
+	ERROR_OBJ        = "ERROR"
+	FUNCTION_OBJ     = "FUNCTION"
+	BUILTIN_OBJ      = "BUILTIN"
 )
 
 type Object interface {
@@ -67,11 +68,11 @@ func (e *Error) Type() ObjectType { return ERROR_OBJ }
 
 type Function struct {
 	Parameters []*ast.Identifier
-	Body *ast.BlockStatement
-	Env *Environment
+	Body       *ast.BlockStatement
+	Env        *Environment
 }
 
-func (f *Function) Inspect() string  {
+func (f *Function) Inspect() string {
 	var out bytes.Buffer
 
 	params := []string{}
@@ -90,3 +91,11 @@ func (f *Function) Inspect() string  {
 	return out.String()
 }
 func (f *Function) Type() ObjectType { return FUNCTION_OBJ }
+
+type BuiltinFunction func(args ...Object) Object
+type Builtin struct {
+	Fn BuiltinFunction
+}
+
+func (b *Builtin) Inspect() string  { return "builtin function" }
+func (b *Builtin) Type() ObjectType { return BUILTIN_OBJ }
