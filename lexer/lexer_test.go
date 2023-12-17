@@ -30,6 +30,7 @@ if (5 < 10) {
 "foo bar"
 "foo \" with literal"
 [1, 2];
+{"test": "dict"}
 `
 
 	tests := []struct {
@@ -118,6 +119,11 @@ if (5 < 10) {
 		{token.INT, "2"},
 		{token.RBRACKET, "]"},
 		{token.SEMICOLON, ";"},
+		{token.LBRACE, "{"},
+		{token.STRING, "test"},
+		{token.COLON, ":"},
+		{token.STRING, "dict"},
+		{token.RBRACE, "}"},
 		{token.EOF, ""},
 	}
 
